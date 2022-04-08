@@ -1,5 +1,5 @@
 # simple_models_Julia
-Julia codes for "Simple Models and Biased Forecasts," by Pooya Molavi
+Julia codes for "Simple Models and Biased Forecasts," by Pooya Molavi (2022)
 
 Shield: [![CC BY-NC-SA 4.0][cc-by-nc-sa-shield]][cc-by-nc-sa]
 
