@@ -8,7 +8,7 @@
 
 ###################################################
 # The optimization algorithm can be any of the following
-# algorithm ∈ {:Ipopt, :adaptive_de_rand_1_bin_radiuslimited, :dxnes, , ...}
+# algorithm ∈ {:Ipopt, :adaptive_de_rand_1_bin_radiuslimited, :dxnes, ...}
 ###################################################
 
 ###################################################
