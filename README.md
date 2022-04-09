@@ -1,7 +1,7 @@
 # simple_models_Julia
 Julia codes for "Simple Models and Biased Forecasts," by Pooya Molavi (2022)
 
-The code generates Figures 1-5 and C.1 in the paper. It also estimates the parameters of the NK model using data from FRED. The code also generates other numerical results of Sections 5-7. 
+The code generates Figures 1-5 and C.1 in the paper. It also estimates the parameters of the NK model using data from https://fred.stlouisfed.org. The code also generates other numerical results of Sections 5-7. 
 
 "NK.jl" generates the results of Section 5. It calls "NK_functions.jl" and "multi_variate_functions.jl" and uses the data in "GDPC1.xlsx," "GDPPOT.xlsx," "GDPDEF.xlsx," and "FEDFUNDS.xlsx." The file "NK_functions.jl" contains functions that are used in estimation of the NK model and compute the impulse response functions and the response to forward guidance.
 
