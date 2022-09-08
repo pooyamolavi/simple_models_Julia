@@ -1,6 +1,5 @@
 ###################################################
 # Julia code for Section 5 of "Simple Models and Biased Forecasts," by Pooya Molavi (2022)
-# The code is licensed under CC BY-NC-SA 4.0: https://creativecommons.org/licenses/by-nc-sa/4.0/
 ###################################################
 # This file generates Figures 1, 2, and C.1 from the paper.
 ###################################################
@@ -12,13 +11,10 @@
 import XLSX
 using Statistics
 using Parameters
-using SolveDSGE
 using LinearAlgebra
 using BlackBoxOptim
 using JuMP
 using Ipopt
-using MatrixEquations
-using Optim
 using Plots
 
 ########################
@@ -134,14 +130,14 @@ plot(IRF[f_dict["π"],:])
 
 T=21
 FG_outcomes = forward_guidance(params, -1*ones(T), T-1)
-FG = zeros(n_f,T-1)
-for t=1:T-1
-    FG[f_dict["x"],t] = FG_outcomes[f_dict["x"],T-t]
-    FG[f_dict["π"],t] = FG_outcomes[f_dict["π"],T-t]
+FG = zeros(n_f,T)
+for t=0:T-1
+    FG[f_dict["x"],t+1] = FG_outcomes[f_dict["x"],T-t]
+    FG[f_dict["π"],t+1] = FG_outcomes[f_dict["π"],T-t]
 end
 ########################
 
 ########################
-plot(FG[f_dict["x"],:])
-plot(FG[f_dict["π"],:])
+plot(0:1:T-1,FG[f_dict["x"],:])
+plot(0:1:T-1,FG[f_dict["π"],:])
 ########################
