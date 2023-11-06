@@ -47,11 +47,6 @@ bboptim_sol = bboptimize(bboptim_prob, MaxTime=16*3600)
 e_vec = best_candidate(bboptim_sol)
 en_params = endogenous_parameters(e_vec)
 
-# en_params = endogenous_parameters(rand(3))
-# ~, en_params = fixed_point_iteration(ex_params, en_params; fixed_iter=200)
-
-# en_params = endogenous_parameters([-2.245167110286566, 0.02819113961411014, -0.4900798062729814])
-
 F_CREE, L_CREE, T_CREE, a, η, p, q = temporary_equilibrium(ex_params, en_params)
 Σ_CREE = L_CREE*ex_params.Σ*L_CREE'
 V_CREE = lyapd(F_CREE,Σ_CREE)
