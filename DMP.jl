@@ -1,6 +1,5 @@
 ###################################################
 # Julia code for Section 7 of "Simple Models and Biased Forecasts," by Pooya Molavi (2022)
-# The code is licensed under CC BY-NC-SA 4.0: https://creativecommons.org/licenses/by-nc-sa/4.0/
 ###################################################
 # This file generates Figures 4 and 5 from the paper.
 ###################################################
@@ -106,7 +105,7 @@ plot!(IRF_a_RE[x_dict["v"],:])
 plot(IRF_a[x_dict["u"],:])
 plot!(IRF_a_RE[x_dict["u"],:])
 
-plot(p[f_dict["a"]]*IRF_a[x_dict["a"],:]+p[f_dict["s"]]*IRF_a[x_dict["s"],:]+p[f_dict["u"]]*IRF_a[x_dict["u"],:])
+plot(-p[f_dict["a"]]*IRF_a[x_dict["a"],:]-p[f_dict["s"]]*IRF_a[x_dict["s"],:]-p[f_dict["u"]]*IRF_a[x_dict["u"],:])
 ########################
 
 ########################
@@ -126,5 +125,5 @@ plot!(IRF_s_RE[x_dict["v"],:])
 plot(IRF_s[x_dict["u"],:])
 plot!(IRF_s_RE[x_dict["u"],:])
 
-plot(p[f_dict["a"]]*IRF_s[x_dict["a"],:]+p[f_dict["s"]]*IRF_s[x_dict["s"],:]+p[f_dict["u"]]*IRF_s[x_dict["u"],:])
+plot(-p[f_dict["a"]]*IRF_s[x_dict["a"],:]-p[f_dict["s"]]*IRF_s[x_dict["s"],:]-p[f_dict["u"]]*IRF_s[x_dict["u"],:])
 ########################

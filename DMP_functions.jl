@@ -1,6 +1,5 @@
 ########################
 # Julia code for Section 7 of "Simple Models and Biased Forecasts," by Pooya Molavi (2022)
-# The code is licensed under CC BY-NC-SA 4.0: https://creativecommons.org/licenses/by-nc-sa/4.0/
 ########################
 # This file contains functions used to compute the equilibirum of the DMP model
 # as well is its response to labor productivity and separation rate shocks.
@@ -94,11 +93,11 @@ end
 function exogenous_parameters(x::calibrated_parameters)
     # steady state values
     w = (x.δ*(1-x.β*(1-x.s-x.p))+(1-x.δ)*(1-x.β*(1-x.s))*x.b)/(1-x.β*(1-x.s-x.δ*x.p))
-    J = (1-w)/(1-x.β*(1-x.s))
+    J = (1-x.s)*(1-w)/(1-x.β*(1-x.s))
 
     # composite parameters
-    ζ = x.β*x.s*(1-w)/(1-x.β*(1-x.s))
-    χ = x.β*(1-x.δ)*(w-x.b)/(1-x.β*(1-x.s-x.p))
+    ζ = x.s*(1-w)/((1-x.s)*(1-x.β*(1-x.s)))
+    χ = (1-x.δ)*(w-x.b)/((1-x.s-x.p)*(1-x.β*(1-x.s-x.p)))
 
     # the shock process
     F = zeros(n_ϵ, n_ϵ)
@@ -150,29 +149,26 @@ function REE(x::exogenous_parameters)
     L = zeros(n_f, n_ϵ)
     ########################
     # θa
-    ω[γ_dict["θa"]] = x.F[ϵ_dict["a"],ϵ_dict["a"]]*(1-x.b)/(1-x.β*x.F[ϵ_dict["a"],ϵ_dict["a"]]*(1-x.s))/(x.α*x.J)
-    Φ[γ_dict["θa"],γ_dict["wa"]] = -x.F[ϵ_dict["a"],ϵ_dict["a"]]/(1-x.β*x.F[ϵ_dict["a"],ϵ_dict["a"]]*(1-x.s))/(x.α*x.J)
+    ω[γ_dict["θa"]] = (1-x.s)*(1-x.b)/(1-x.β*x.F[ϵ_dict["a"],ϵ_dict["a"]]*(1-x.s))/(x.α*x.J)
+    Φ[γ_dict["θa"],γ_dict["wa"]] = -(1-x.s)/(1-x.β*x.F[ϵ_dict["a"],ϵ_dict["a"]]*(1-x.s))/(x.α*x.J)
     ########################
     # θs
-    ω[γ_dict["θs"]] = -x.F[ϵ_dict["s"],ϵ_dict["s"]]*x.ζ/(1-x.β*x.F[ϵ_dict["s"],ϵ_dict["s"]]*(1-x.s))/(x.α*x.J)
-    Φ[γ_dict["θs"],γ_dict["ws"]] = -x.F[ϵ_dict["s"],ϵ_dict["s"]]/(1-x.β*x.F[ϵ_dict["s"],ϵ_dict["s"]]*(1-x.s))/(x.α*x.J)
+    ω[γ_dict["θs"]] = -x.β*x.F[ϵ_dict["s"],ϵ_dict["s"]]*(1-x.s)^2*x.ζ/(1-x.β*x.F[ϵ_dict["s"],ϵ_dict["s"]]*(1-x.s))/(x.α*x.J)
+    Φ[γ_dict["θs"],γ_dict["ws"]] = -(1-x.s)/(1-x.β*x.F[ϵ_dict["s"],ϵ_dict["s"]]*(1-x.s))/(x.α*x.J)
     ########################
     # wa
     ω[γ_dict["wa"]] += x.δ*(1-x.b)
-    Φ[γ_dict["wa"],γ_dict["θa"]] += x.p*x.χ*(1-x.α)
     ω[γ_dict["wa"]] += x.β*x.δ*x.F[ϵ_dict["a"],ϵ_dict["a"]]*(1-x.s)*(1-x.b)/(1-x.β*x.F[ϵ_dict["a"],ϵ_dict["a"]]*(1-x.s))
     Φ[γ_dict["wa"],γ_dict["wa"]] += -x.β*x.δ*x.F[ϵ_dict["a"],ϵ_dict["a"]]*(1-x.s)/(1-x.β*x.F[ϵ_dict["a"],ϵ_dict["a"]]*(1-x.s))
     Φ[γ_dict["wa"],γ_dict["θa"]] += x.β*x.F[ϵ_dict["a"],ϵ_dict["a"]]*(1-x.s-x.p)/(1-x.β*x.F[ϵ_dict["a"],ϵ_dict["a"]]*(1-x.s-x.p))*x.p*x.χ*(1-x.α)
     Φ[γ_dict["wa"],γ_dict["wa"]] += -x.β*x.F[ϵ_dict["a"],ϵ_dict["a"]]*(1-x.s-x.p)/(1-x.β*x.F[ϵ_dict["a"],ϵ_dict["a"]]*(1-x.s-x.p))*(1-x.δ)
     ########################
     # ws
-    ω[γ_dict["ws"]] += x.s*x.χ-x.δ*x.ζ
-    Φ[γ_dict["ws"],γ_dict["θs"]] += x.p*x.χ*(1-x.α)
-    ω[γ_dict["ws"]] += -x.β*x.δ*x.F[ϵ_dict["s"],ϵ_dict["s"]]*(1-x.s)*x.ζ/(1-x.β*x.F[ϵ_dict["s"],ϵ_dict["s"]]*(1-x.s))
-    Φ[γ_dict["ws"],γ_dict["ws"]] += -x.β*x.δ*x.F[ϵ_dict["s"],ϵ_dict["s"]]*(1-x.s)/(1-x.β*x.F[ϵ_dict["s"],ϵ_dict["s"]]*(1-x.s))
     Φ[γ_dict["ws"],γ_dict["θs"]] += x.β*x.F[ϵ_dict["s"],ϵ_dict["s"]]*(1-x.s-x.p)/(1-x.β*x.F[ϵ_dict["s"],ϵ_dict["s"]]*(1-x.s-x.p))*x.p*x.χ*(1-x.α)
     ω[γ_dict["ws"]] += x.β*x.F[ϵ_dict["s"],ϵ_dict["s"]]*(1-x.s-x.p)/(1-x.β*x.F[ϵ_dict["s"],ϵ_dict["s"]]*(1-x.s-x.p))*x.s*x.χ
     Φ[γ_dict["ws"],γ_dict["ws"]] += -x.β*x.F[ϵ_dict["s"],ϵ_dict["s"]]*(1-x.s-x.p)/(1-x.β*x.F[ϵ_dict["s"],ϵ_dict["s"]]*(1-x.s-x.p))*(1-x.δ)
+    ω[γ_dict["ws"]] += -x.β*x.δ*x.F[ϵ_dict["s"],ϵ_dict["s"]]*(1-x.s)*x.ζ/(1-x.β*x.F[ϵ_dict["s"],ϵ_dict["s"]]*(1-x.s))
+    Φ[γ_dict["ws"],γ_dict["ws"]] += -x.β*x.δ*x.F[ϵ_dict["s"],ϵ_dict["s"]]*(1-x.s)/(1-x.β*x.F[ϵ_dict["s"],ϵ_dict["s"]]*(1-x.s))
     ########################
     γ = inv(I-Φ)*ω
     ########################
@@ -240,28 +236,31 @@ function temporary_equilibrium(x::exogenous_parameters, e::endogenous_parameters
     ω = zeros(n_ψ)
     ########################
     # θu
-    ω[ψ_dict["θu"]] += a*p[f_dict["u"]]/(1-a*x.β*(1-x.s))*(1-x.b)/(x.α*x.J)*q[f_dict["a"]]
-    Φ[ψ_dict["θu"],ψ_dict["wa"]] += -a*p[f_dict["u"]]/(1-a*x.β*(1-x.s))/(x.α*x.J)*q[f_dict["a"]]
-    Φ[ψ_dict["θu"],ψ_dict["wu"]] += -a*p[f_dict["u"]]/(1-a*x.β*(1-x.s))/(x.α*x.J)*q[f_dict["u"]]
-    ω[ψ_dict["θu"]] += -a*p[f_dict["u"]]/(1-a*x.β*(1-x.s))*x.ζ/(x.α*x.J)*q[f_dict["s"]]
-    Φ[ψ_dict["θu"],ψ_dict["ws"]] += -a*p[f_dict["u"]]/(1-a*x.β*(1-x.s))/(x.α*x.J)*q[f_dict["s"]]
+    ω[ψ_dict["θu"]] += a*x.β*(1-x.s)^2*p[f_dict["u"]]/(1-a*x.β*(1-x.s))*(1-x.b)/(x.α*x.J)*q[f_dict["a"]]
+    Φ[ψ_dict["θu"],ψ_dict["wa"]] += -a*x.β*(1-x.s)^2*p[f_dict["u"]]/(1-a*x.β*(1-x.s))/(x.α*x.J)*q[f_dict["a"]]
+    Φ[ψ_dict["θu"],ψ_dict["wu"]] += -a*x.β*(1-x.s)^2*p[f_dict["u"]]/(1-a*x.β*(1-x.s))/(x.α*x.J)*q[f_dict["u"]]
+    ω[ψ_dict["θu"]] += -a*x.β*(1-x.s)^2*p[f_dict["u"]]/(1-a*x.β*(1-x.s))*x.ζ/(x.α*x.J)*q[f_dict["s"]]
+    Φ[ψ_dict["θu"],ψ_dict["ws"]] += -a*x.β*(1-x.s)^2*p[f_dict["u"]]/(1-a*x.β*(1-x.s))/(x.α*x.J)*q[f_dict["s"]]
+    Φ[ψ_dict["θu"],ψ_dict["wu"]] += -(1-x.s)/(x.α*x.J)
     ########################
     # θa
-    ω[ψ_dict["θa"]] += a*p[f_dict["a"]]/(1-a*x.β*(1-x.s))*(1-x.b)/(x.α*x.J)*q[f_dict["a"]]
-    Φ[ψ_dict["θa"],ψ_dict["wa"]] += -a*p[f_dict["a"]]/(1-a*x.β*(1-x.s))/(x.α*x.J)*q[f_dict["a"]]
-    Φ[ψ_dict["θa"],ψ_dict["wu"]] += -a*p[f_dict["a"]]/(1-a*x.β*(1-x.s))/(x.α*x.J)*q[f_dict["u"]]
-    ω[ψ_dict["θa"]] += -a*p[f_dict["a"]]/(1-a*x.β*(1-x.s))*x.ζ/(x.α*x.J)*q[f_dict["s"]]
-    Φ[ψ_dict["θa"],ψ_dict["ws"]] += -a*p[f_dict["a"]]/(1-a*x.β*(1-x.s))/(x.α*x.J)*q[f_dict["s"]]
+    ω[ψ_dict["θa"]] += a*x.β*(1-x.s)^2*p[f_dict["a"]]/(1-a*x.β*(1-x.s))*(1-x.b)/(x.α*x.J)*q[f_dict["a"]]
+    Φ[ψ_dict["θa"],ψ_dict["wa"]] += -a*x.β*(1-x.s)^2*p[f_dict["a"]]/(1-a*x.β*(1-x.s))/(x.α*x.J)*q[f_dict["a"]]
+    Φ[ψ_dict["θa"],ψ_dict["wu"]] += -a*x.β*(1-x.s)^2*p[f_dict["a"]]/(1-a*x.β*(1-x.s))/(x.α*x.J)*q[f_dict["u"]]
+    ω[ψ_dict["θa"]] += -a*x.β*(1-x.s)^2*p[f_dict["a"]]/(1-a*x.β*(1-x.s))*x.ζ/(x.α*x.J)*q[f_dict["s"]]
+    Φ[ψ_dict["θa"],ψ_dict["ws"]] += -a*x.β*(1-x.s)^2*p[f_dict["a"]]/(1-a*x.β*(1-x.s))/(x.α*x.J)*q[f_dict["s"]]
+    ω[ψ_dict["θa"]] += (1-x.s)*(1-x.b)/(x.α*x.J)
+    Φ[ψ_dict["θa"],ψ_dict["wa"]] += -(1-x.s)/(x.α*x.J)
     ########################
     # θs
-    ω[ψ_dict["θs"]] += a*p[f_dict["s"]]/(1-a*x.β*(1-x.s))*(1-x.b)/(x.α*x.J)*q[f_dict["a"]]
-    Φ[ψ_dict["θs"],ψ_dict["wa"]] += -a*p[f_dict["s"]]/(1-a*x.β*(1-x.s))/(x.α*x.J)*q[f_dict["a"]]
-    Φ[ψ_dict["θs"],ψ_dict["wu"]] += -a*p[f_dict["s"]]/(1-a*x.β*(1-x.s))/(x.α*x.J)*q[f_dict["u"]]
-    ω[ψ_dict["θs"]] += -a*p[f_dict["s"]]/(1-a*x.β*(1-x.s))*x.ζ/(x.α*x.J)*q[f_dict["s"]]
-    Φ[ψ_dict["θs"],ψ_dict["ws"]] += -a*p[f_dict["s"]]/(1-a*x.β*(1-x.s))/(x.α*x.J)*q[f_dict["s"]]
+    ω[ψ_dict["θs"]] += a*x.β*(1-x.s)^2*p[f_dict["s"]]/(1-a*x.β*(1-x.s))*(1-x.b)/(x.α*x.J)*q[f_dict["a"]]
+    Φ[ψ_dict["θs"],ψ_dict["wa"]] += -a*x.β*(1-x.s)^2*p[f_dict["s"]]/(1-a*x.β*(1-x.s))/(x.α*x.J)*q[f_dict["a"]]
+    Φ[ψ_dict["θs"],ψ_dict["wu"]] += -a*x.β*(1-x.s)^2*p[f_dict["s"]]/(1-a*x.β*(1-x.s))/(x.α*x.J)*q[f_dict["u"]]
+    ω[ψ_dict["θs"]] += -a*x.β*(1-x.s)^2*p[f_dict["s"]]/(1-a*x.β*(1-x.s))*x.ζ/(x.α*x.J)*q[f_dict["s"]]
+    Φ[ψ_dict["θs"],ψ_dict["ws"]] += -a*x.β*(1-x.s)^2*p[f_dict["s"]]/(1-a*x.β*(1-x.s))/(x.α*x.J)*q[f_dict["s"]]
+    Φ[ψ_dict["θs"],ψ_dict["ws"]] += -(1-x.s)/(x.α*x.J)
     ########################
     # wu
-    Φ[ψ_dict["wu"],ψ_dict["θu"]] += x.p*x.χ*(1-x.α)
     ω[ψ_dict["wu"]] += a*x.β*x.δ*(1-x.s)*p[f_dict["u"]]/(1-a*x.β*(1-x.s))*(1-x.b)*q[f_dict["a"]]
     Φ[ψ_dict["wu"],ψ_dict["wa"]] += -a*x.β*x.δ*(1-x.s)*p[f_dict["u"]]/(1-a*x.β*(1-x.s))*q[f_dict["a"]]
     Φ[ψ_dict["wu"],ψ_dict["wu"]] += -a*x.β*x.δ*(1-x.s)*p[f_dict["u"]]/(1-a*x.β*(1-x.s))*q[f_dict["u"]]
@@ -277,7 +276,6 @@ function temporary_equilibrium(x::exogenous_parameters, e::endogenous_parameters
     ########################
     # wa
     ω[ψ_dict["wa"]] += x.δ*(1-x.b)
-    Φ[ψ_dict["wa"],ψ_dict["θa"]] += x.p*x.χ*(1-x.α)
     ω[ψ_dict["wa"]] += a*x.β*x.δ*(1-x.s)*p[f_dict["a"]]/(1-a*x.β*(1-x.s))*(1-x.b)*q[f_dict["a"]]
     Φ[ψ_dict["wa"],ψ_dict["wa"]] += -a*x.β*x.δ*(1-x.s)*p[f_dict["a"]]/(1-a*x.β*(1-x.s))*q[f_dict["a"]]
     Φ[ψ_dict["wa"],ψ_dict["wu"]] += -a*x.β*x.δ*(1-x.s)*p[f_dict["a"]]/(1-a*x.β*(1-x.s))*q[f_dict["u"]]
@@ -292,8 +290,6 @@ function temporary_equilibrium(x::exogenous_parameters, e::endogenous_parameters
     ω[ψ_dict["wa"]] += a*x.β*(1-x.s-x.p)*p[f_dict["a"]]/(1-a*x.β*(1-x.s-x.p))*x.s*x.χ*q[f_dict["s"]]
     ########################
     # ws
-    ω[ψ_dict["ws"]] += x.s*x.χ-x.δ*x.ζ
-    Φ[ψ_dict["ws"],ψ_dict["θs"]] += x.p*x.χ*(1-x.α)
     ω[ψ_dict["ws"]] += a*x.β*x.δ*(1-x.s)*p[f_dict["s"]]/(1-a*x.β*(1-x.s))*(1-x.b)*q[f_dict["a"]]
     Φ[ψ_dict["ws"],ψ_dict["wa"]] += -a*x.β*x.δ*(1-x.s)*p[f_dict["s"]]/(1-a*x.β*(1-x.s))*q[f_dict["a"]]
     Φ[ψ_dict["ws"],ψ_dict["wu"]] += -a*x.β*x.δ*(1-x.s)*p[f_dict["s"]]/(1-a*x.β*(1-x.s))*q[f_dict["u"]]
@@ -328,7 +324,6 @@ function temporary_equilibrium(x::exogenous_parameters, e::endogenous_parameters
     ########################
     return F, L, T, a, η, p, q
 end
-
 ########################
 
 ########################
